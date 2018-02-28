@@ -112,7 +112,7 @@ public class Board {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i=0;i<board.length;i++) {
-			sb.append(board[i] + " ");
+			sb.append(board[i] + "\t");
 			
 			if ( (i % 4) == 3)
 				sb.append("\n");

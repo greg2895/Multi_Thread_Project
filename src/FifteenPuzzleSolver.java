@@ -1,18 +1,17 @@
+import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class FifteenPuzzleSolver {
-	
-	//////////////////////////////////////////
-	private static final int SEED = 11023;
-	private static final int THREADCOUNT = 4;
-	//////////////////////////////////////////
-	
+
 	//Stack that holds all depth counts for threads
 	public static Stack<Integer> depthCount = new Stack<Integer>();	
-	public static Board board = Board.createBoard(SEED);
-	public static List<Board> solution;
+	public static Board board;
+	public static List<Board> solution;	
+	private static int seed;
+	private static int threadCount;
 	
     public static Runnable myRunnable = new Runnable() {
         public void run() {
@@ -26,16 +25,28 @@ public class FifteenPuzzleSolver {
     		System.out.println("Elapsed time: " + ((double)elapsed) / 1000.0 + " seconds");
     		for (int i=0;i<solution.size();i++) {
     			System.out.println(solution.get(i));
+    			System.out.println("===========================");
     		}
     		//End program when solution is found and printed
     		System.exit(0);
         }
     };
 
-	
 	public static void main(String [] args) {
 
-		System.out.println("Seed: " + SEED);
+		Scanner in = new Scanner(System.in);
+		try{
+		System.out.print("Enter a Seed Numnber: ");
+		seed = in.nextInt();
+		System.out.print("Enter Number of Threads to Use: ");
+		threadCount = in.nextInt();
+		in.close();
+		} catch(InputMismatchException e){
+			System.out.println("Please Enter an Integer!");
+			System.exit(0);
+		}
+		board = Board.createBoard(seed);
+		System.out.println("Seed: " + seed);
 		//Fill stack in reverse order
 		for (int i = 99;i>=0;i--){
 			depthCount.push(i);
@@ -45,11 +56,14 @@ public class FifteenPuzzleSolver {
 		for (int i = 0; i< board.minimumSolutionDepth(); i++){
 			depthCount.pop();
 		}
-		
-		System.out.println("Using " + THREADCOUNT + " threads to solve this board: \n" + board);
+		if(threadCount < 1 || threadCount >8 ){
+			System.out.println("THREADCOUNT MUST BE BETWEEN 1 and 8");
+			System.exit(0);
+		}
+		System.out.println("Using " + threadCount + " threads to solve this board: \n" + board);
 		System.out.println();
 
-		Thread[] threads = new Thread [THREADCOUNT];
+		Thread[] threads = new Thread [threadCount];
         for(int x =0; x < threads.length; x++) {
             threads[x] = new Thread(myRunnable);
             threads[x].start();
